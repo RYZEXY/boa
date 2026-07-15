@@ -16,5 +16,9 @@ diplomat-runtime = "0.15.1"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[[example]]
+name = "demo"
+path = "examples/demo.rs"
+
 [lints]
 workspace = true
