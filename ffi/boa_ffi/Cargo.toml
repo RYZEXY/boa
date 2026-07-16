@@ -12,13 +12,10 @@ rust-version.workspace = true
 [dependencies]
 diplomat = "0.15.0"
 diplomat-runtime = "0.15.1"
+boa_engine = { workspace = true }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-
-[[example]]
-name = "demo"
-path = "examples/demo.rs"
 
 [lints]
 workspace = true

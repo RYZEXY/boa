@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="/mnt/c/Users/sunfr/projects/boa"
-MANIFEST="$REPO_ROOT/ffi/boa_ffi/Cargo.toml"
-BIN="$PWD/demo"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+BIN="$SCRIPT_DIR/demo"
+
+case "$(uname -s)" in
+  Darwin) LIB_NAME="libboa_ffi.dylib" ;;
+  *)      LIB_NAME="libboa_ffi.so" ;;
+esac
+LIB_PATH="$REPO_ROOT/target/debug/$LIB_NAME"
 
 cd "$REPO_ROOT"
-cargo build -p boa_ffi --target x86_64-unknown-linux-gnu
+cargo build -p boa_ffi
 
 gcc -std=c11 -I "$REPO_ROOT/ffi/boa_ffi/c/generated" \
-  "$REPO_ROOT/ffi/boa_ffi/c/demo/main.c" \
-  "$REPO_ROOT/target/x86_64-unknown-linux-gnu/debug/libboa_ffi.so" \
-  -Wl,-rpath,"$REPO_ROOT/target/x86_64-unknown-linux-gnu/debug" \
+  "$SCRIPT_DIR/main.c" \
+  "$LIB_PATH" \
+  -Wl,-rpath,"$REPO_ROOT/target/debug" \
   -o "$BIN"
 
 "$BIN"

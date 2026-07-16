@@ -474,6 +474,7 @@ dependencies = [
 name = "boa_ffi"
 version = "1.0.0-dev"
 dependencies = [
+ "boa_engine",
  "diplomat",
  "diplomat-runtime",
 ]
