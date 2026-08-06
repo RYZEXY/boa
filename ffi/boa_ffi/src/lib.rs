@@ -14,6 +14,7 @@ pub mod ffi {
 
     impl BoaContext {
         /// Creates a fresh JS engine instance.
+        #[must_use]
         pub fn new() -> Box<BoaContext> {
             Box::new(BoaContext(Context::default()))
         }
