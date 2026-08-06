@@ -48,5 +48,4 @@ mod tests {
         ctx.eval("2 + 2", unsafe { write.borrow_mut() });
         assert_eq!(write.borrow().as_bytes(), b"4");
     }
-
 }
