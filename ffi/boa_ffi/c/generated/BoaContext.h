@@ -19,6 +19,12 @@ BoaContext* BoaContext_new(void);
 
 void BoaContext_eval(BoaContext* self, DiplomatStringView src, DiplomatWrite* write);
 
+JsValue* BoaContext_eval_value(BoaContext* self, DiplomatStringView src);
+
+bool JsValue_is_number(const JsValue* self);
+double JsValue_as_number(const JsValue* self);
+void JsValue_destroy(JsValue* self);
+
 void BoaContext_destroy(BoaContext* self);
 
 

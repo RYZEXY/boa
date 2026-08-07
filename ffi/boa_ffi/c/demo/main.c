@@ -17,10 +17,14 @@ int main(void) {
             line[--len] = '\0';
         }
 
-        DiplomatWrite* write = diplomat_buffer_write_create(0);
-        BoaContext_eval(ctx, (DiplomatStringView){line, len}, write);
-        printf("%s\n", diplomat_buffer_write_get_bytes(write));
-        diplomat_buffer_write_destroy(write);
+        JsValue* value = BoaContext_eval_value(ctx, (DiplomatStringView){line, len});
+        double number = JsValue_as_number(value);
+        if (number == 0.0 && !JsValue_is_number(value)) {
+            printf("<non-numeric value>\n");
+        } else {
+            printf("%.15g\n", number);
+        }
+        JsValue_destroy(value);
 
         printf("> ");
         fflush(stdout);

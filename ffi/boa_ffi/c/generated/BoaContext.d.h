@@ -12,6 +12,7 @@
 
 
 typedef struct BoaContext BoaContext;
+typedef struct JsValue JsValue;
 
 
 
