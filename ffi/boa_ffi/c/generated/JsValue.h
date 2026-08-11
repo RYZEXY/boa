@@ -18,18 +18,18 @@
 
 JsValue* JsValue_from_number(double n);
 
-JsValue* JsValue_from_null(void);
-
-JsValue* JsValue_from_undefined(void);
-
-bool JsValue_is_null(const JsValue* self);
-
-bool JsValue_is_undefined(const JsValue* self);
-
 bool JsValue_is_number(const JsValue* self);
 
 typedef struct JsValue_as_number_result {union {double ok; }; bool is_ok;} JsValue_as_number_result;
 JsValue_as_number_result JsValue_as_number(const JsValue* self);
+
+JsValue* JsValue_from_null(void);
+
+bool JsValue_is_null(const JsValue* self);
+
+JsValue* JsValue_from_undefined(void);
+
+bool JsValue_is_undefined(const JsValue* self);
 
 JsValue* JsValue_from_boolean(bool b);
 

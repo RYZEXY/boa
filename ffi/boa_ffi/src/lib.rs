@@ -3,11 +3,18 @@
 /// Diplomat bridge entry points
 #[diplomat::bridge]
 pub mod ffi {
+    // Diplomat's opaque-type convention requires constructors to return
+    // `Box<Self>` so the value can cross the FFI boundary as a heap
+    // pointer (see `#[diplomat::opaque]` below) — clippy's sized-type
+    // heuristic doesn't know about that requirement, so it's suppressed
+    // here rather than by removing the `Box`, which would break the FFI.
+    #![allow(clippy::unnecessary_box_returns)]
+
+    use boa_engine::property::Attribute;
     use boa_engine::{
         Context, JsBigInt as BoaJsBigInt, JsObject as BoaJsObject, JsSymbol as BoaJsSymbol,
         JsValue as BoaJsValue, Source, js_string,
     };
-    use boa_engine::property::Attribute;
     use diplomat_runtime::{DiplomatOption, DiplomatWrite};
     use std::fmt::Write as _;
 
@@ -29,11 +36,13 @@ pub mod ffi {
         }
 
         /// Returns true when this value is a number.
+        #[must_use]
         pub fn is_number(&self) -> bool {
             self.0.is_number()
         }
 
         /// Returns the numeric payload when this value is a number.
+        #[must_use]
         pub fn as_number(&self) -> DiplomatOption<f64> {
             self.0.as_number().into()
         }
@@ -45,6 +54,7 @@ pub mod ffi {
         }
 
         /// Returns true when this value is `null`.
+        #[must_use]
         pub fn is_null(&self) -> bool {
             self.0.is_null()
         }
@@ -56,6 +66,7 @@ pub mod ffi {
         }
 
         /// Returns true when this value is `undefined`.
+        #[must_use]
         pub fn is_undefined(&self) -> bool {
             self.0.is_undefined()
         }
@@ -68,11 +79,13 @@ pub mod ffi {
         }
 
         /// Returns true when this value is a boolean.
+        #[must_use]
         pub fn is_boolean(&self) -> bool {
             self.0.is_boolean()
         }
 
         /// Returns the boolean payload when this value is a boolean.
+        #[must_use]
         pub fn as_boolean(&self) -> DiplomatOption<bool> {
             self.0.as_boolean().into()
         }
@@ -85,6 +98,7 @@ pub mod ffi {
         }
 
         /// Returns true when this value is a string.
+        #[must_use]
         pub fn is_string(&self) -> bool {
             self.0.is_string()
         }
@@ -98,6 +112,7 @@ pub mod ffi {
         }
 
         /// Returns true when this value is an object (including functions and arrays).
+        #[must_use]
         pub fn is_object(&self) -> bool {
             self.0.is_object()
         }
@@ -105,23 +120,26 @@ pub mod ffi {
         /// Converts this value into a `JsObject` handle if it is an object.
         /// Returns `None` (a null pointer in C) for non-object values. This
         /// is the same underlying object, not a copy — see `JsObject::as_value`.
+        #[must_use]
         pub fn as_object(&self) -> Option<Box<JsObject>> {
             self.0.as_object().map(|o| Box::new(JsObject(o)))
         }
 
-        /// Constructs a BigInt JS value from its decimal string representation.
-        /// Returns `None` if the string is not a valid BigInt literal
+        /// Constructs a `BigInt` JS value from its decimal string representation.
+        /// Returns `None` if the string is not a valid `BigInt` literal
         /// (arbitrary precision is preserved — this never narrows to i64/u64/f64).
+        #[must_use]
         pub fn from_bigint_string(s: &str) -> Option<Box<JsValue>> {
             BoaJsBigInt::from_string(s).map(|b| Box::new(JsValue(BoaJsValue::from(b))))
         }
 
         /// Returns true when this value is a `BigInt`.
+        #[must_use]
         pub fn is_bigint(&self) -> bool {
             self.0.is_bigint()
         }
 
-        /// Writes the full decimal representation when this value is a BigInt.
+        /// Writes the full decimal representation when this value is a `BigInt`.
         /// Writes nothing otherwise — call `is_bigint` first to distinguish.
         /// Uses arbitrary-precision string conversion, never narrowed to a
         /// fixed-width integer or float.
@@ -131,11 +149,17 @@ pub mod ffi {
             }
         }
 
-        /// Constructs a Symbol JS value with the given description.
+        /// Constructs a `Symbol` JS value with the given description.
         ///
         /// Note: the description does not determine the symbol's identity —
         /// two symbols constructed with the same description are still
         /// distinct values, matching `Symbol("x") !== Symbol("x")` in JS.
+        ///
+        /// # Panics
+        ///
+        /// Panics if the engine has already created `u64::MAX` symbols
+        /// (Boa's internal symbol id space exhausted) — not reachable in
+        /// practice.
         #[must_use]
         pub fn from_symbol(description: &str) -> Box<JsValue> {
             let symbol = BoaJsSymbol::new(Some(js_string!(description)))
@@ -143,7 +167,13 @@ pub mod ffi {
             Box::new(JsValue(BoaJsValue::from(symbol)))
         }
 
-        /// Constructs a Symbol JS value with no description.
+        /// Constructs a `Symbol` JS value with no description.
+        ///
+        /// # Panics
+        ///
+        /// Panics if the engine has already created `u64::MAX` symbols
+        /// (Boa's internal symbol id space exhausted) — not reachable in
+        /// practice.
         #[must_use]
         pub fn from_symbol_no_description() -> Box<JsValue> {
             let symbol = BoaJsSymbol::new(None)
@@ -152,11 +182,13 @@ pub mod ffi {
         }
 
         /// Returns true when this value is a `Symbol`.
+        #[must_use]
         pub fn is_symbol(&self) -> bool {
             self.0.is_symbol()
         }
 
         /// Returns true when this value is a `Symbol` that has a description.
+        #[must_use]
         pub fn symbol_has_description(&self) -> bool {
             self.0
                 .as_symbol()
@@ -218,6 +250,7 @@ pub mod ffi {
         }
 
         /// Evaluates a JS source string and returns the result as an owned JS value.
+        #[must_use]
         pub fn eval_value(&mut self, src: &str) -> Box<JsValue> {
             let result = self.0.eval(Source::from_bytes(src));
             match result {

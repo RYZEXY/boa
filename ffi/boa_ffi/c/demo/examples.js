@@ -21,5 +21,8 @@ new Point(3,4).dist()
 //Recursion
 (function fib(n) { return n < 2 ? n : fib(n-1) + fib(n-2); }) (15)
 
+//Error
+JSON.parse("{bad json")
+
 //Try catch
 try { JSON.parse("{bad json") } catch (e) { e.message }
