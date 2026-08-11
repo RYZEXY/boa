@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "diplomat_runtime.h"
 
+#include "JsValue.d.h"
 
 #include "BoaContext.d.h"
 
@@ -21,9 +22,7 @@ void BoaContext_eval(BoaContext* self, DiplomatStringView src, DiplomatWrite* wr
 
 JsValue* BoaContext_eval_value(BoaContext* self, DiplomatStringView src);
 
-bool JsValue_is_number(const JsValue* self);
-double JsValue_as_number(const JsValue* self);
-void JsValue_destroy(JsValue* self);
+void BoaContext_set_global(BoaContext* self, DiplomatStringView name, const JsValue* value);
 
 void BoaContext_destroy(BoaContext* self);
 

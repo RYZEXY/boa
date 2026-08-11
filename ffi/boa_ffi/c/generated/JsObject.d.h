@@ -1,5 +1,5 @@
-#ifndef BoaContext_D_H
-#define BoaContext_D_H
+#ifndef JsObject_D_H
+#define JsObject_D_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -11,9 +11,9 @@
 
 
 
-typedef struct BoaContext BoaContext;
+typedef struct JsObject JsObject;
 
 
 
 
-#endif // BoaContext_D_H
+#endif // JsObject_D_H
