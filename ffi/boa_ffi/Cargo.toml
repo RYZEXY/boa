@@ -1,0 +1,21 @@
+[package]
+name = "boa_ffi"
+description = "A small Diplomat-based FFI crate for Boa"
+publish = false
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+diplomat = "0.15.0"
+diplomat-runtime = "0.15.1"
+boa_engine = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[lints]
+workspace = true

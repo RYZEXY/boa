@@ -52,3 +52,7 @@ perf.data*
 # Nix
 /.envrc
 /.direnv
+
+# FFI C demo build output
+/ffi/boa_ffi/c/demo/demo
+/ffi/boa_ffi/c/demo/demo.exe
